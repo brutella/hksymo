@@ -67,8 +67,6 @@ func get() (inv fronius.InverterSystemResponse, err error) {
 }
 
 func update() {
-	log.Verbose = false
-
 	inv, err := get()
 
 	if err != nil {
