@@ -2,16 +2,16 @@ package main
 
 import (
 	"flag"
-	"fmt"
 	"github.com/brutella/fronius"
-	"github.com/brutella/hc/hap"
-	"github.com/brutella/hc/model"
+	"github.com/brutella/hc"
+	"github.com/brutella/hc/accessory"
 	"github.com/brutella/hksymo"
 	"github.com/brutella/log"
 
 	slog "log"
 	"net"
 	"net/http"
+	"net/url"
 	"os"
 	"time"
 )
@@ -38,10 +38,13 @@ func NewTimeoutClient(connectTimeout time.Duration, readWriteTimeout time.Durati
 }
 
 func get() (inv fronius.InverterSystemResponse, err error) {
+	client := NewTimeoutClient(5*time.Second, 5*time.Second)
+
 	if simulate == true {
 		s := fronius.NewSymoSimulator()
 		defer s.Stop()
-		resp, err := fronius.GetSystemRealtimeData(s.URL())
+		url, _ := url.Parse(s.URL())
+		resp, err := client.Get(fronius.SystemRealtimeDataRequestURL(url.Host))
 
 		if err != nil {
 			slog.Fatal(err)
@@ -49,16 +52,10 @@ func get() (inv fronius.InverterSystemResponse, err error) {
 
 		inv, err = fronius.NewInverterSystemResponse(resp)
 	} else {
-		client := NewTimeoutClient(5*time.Second, 5*time.Second)
 		var resp *http.Response
-		resp, err = client.Get(fronius.SystemRealtimeDataRequestURL(fronius.SymoHostClassA))
+		resp, err = client.Get(fronius.SystemRealtimeDataRequestURL(host))
 
-		if err != nil {
-			if transport != nil {
-				transport.Stop()
-				transport = nil
-			}
-		} else {
+		if err == nil {
 			inv, err = fronius.NewInverterSystemResponse(resp)
 		}
 	}
@@ -71,28 +68,28 @@ func update() {
 
 	if err != nil {
 		slog.Println(err)
+
+		if transport != nil {
+			transport.Stop()
+			transport = nil
+		}
 		return
 	}
-
-	fmt.Printf("current power: %v\n", fronius.SystemCurrentPower(inv))
-	fmt.Printf("today: %v\n", fronius.SystemEnergyToday(inv))
-	fmt.Printf("this year: %v\n", fronius.SystemEnergyThisYear(inv))
-	fmt.Printf("total: %v\n", fronius.SystemEnergyTotal(inv))
 
 	pow := fronius.SystemCurrentPower(inv)
 	today := fronius.SystemEnergyToday(inv)
 	year := fronius.SystemEnergyThisYear(inv)
 	total := fronius.SystemEnergyTotal(inv)
-	generator.SetCurrentPower(pow.Value)
-	generator.SetTodayEnergy(today.Value)
-	generator.SetYearEnergy(year.Value)
-	generator.SetTotalEnergy(total.Value)
+	acc.Inverter.Current.SetValue(int(pow.Value))
+	acc.Inverter.Today.SetValue(int(today.Value))
+	acc.Inverter.Year.SetValue(int(year.Value))
+	acc.Inverter.Total.SetValue(int(total.Value))
 
 	if transport == nil {
 		var err error
-		transport, err = hap.NewIPTransport("00102003", generator.Accessory)
+		transport, err = hc.NewIPTransport(config, acc.Accessory)
 		if err != nil {
-			slog.Println(err)
+			log.Println(err)
 		}
 
 		go func() {
@@ -101,30 +98,34 @@ func update() {
 	}
 }
 
-var transport hap.Transport
-var generator *symo.Generator
+var transport hc.Transport
+var acc *symo.Accessory
 var host string
 var simulate bool
+var config hc.Config
 
 func main() {
+	log.Verbose = false
+	log.Info = true
+
 	var (
-		hostArg     = flag.String("host", fronius.SymoHostClassA, "Host; default http://169.254.0.180")
-		refreshArg  = flag.Int("refresh", 10, "Refresh in seconds; default 10")
-		simulateArg = flag.Bool("simulate", true, "Simulate Fronius symo; default true")
+		hostArg     = flag.String("host", fronius.SymoHostClassA, "Host; default 169.254.0.180")
+		refreshArg  = flag.Int("refresh", 5, "Refresh in seconds; default 10")
+		simulateArg = flag.Bool("simulate", false, "Simulate Fronius symo; default true")
 	)
 
 	flag.Parse()
-
 	host = *hostArg
 	simulate = *simulateArg
+
 	refresh := time.Duration(*refreshArg) * time.Second
 
-	info := model.Info{
+	info := accessory.Info{
 		Name:         "Symo",
 		Manufacturer: "Fronius",
 	}
 
-	generator = symo.NewGenerator(info)
+	acc = symo.NewAccessory(info)
 
 	var timer *time.Timer
 	timer = time.AfterFunc(refresh, func() {
@@ -132,7 +133,7 @@ func main() {
 		timer.Reset(refresh)
 	})
 
-	hap.OnTermination(func() {
+	hc.OnTermination(func() {
 		if transport != nil {
 			transport.Stop()
 		}

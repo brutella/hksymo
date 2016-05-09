@@ -1,12 +1,6 @@
 package symo
 
-import (
-	"github.com/brutella/hc/model/characteristic"
+const (
+	TypePower      = "032B12CF-D4E8-4277-9021-188816FD00C6"
+	TypeTotalPower = "032B12CA-D4E8-4277-9021-188816FD00C6"
 )
-
-const TypePower characteristic.CharType = "A1"
-const TypeTodayEnergy characteristic.CharType = "B1"
-const TypeYearEnergy characteristic.CharType = "B2"
-const TypeTotalEnergy characteristic.CharType = "B3"
-const PowerUnit = "A"
-const EnergyUnit = "Wh"

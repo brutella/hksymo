@@ -1,24 +1,18 @@
 package symo
 
 import (
-	"github.com/brutella/hc/model/characteristic"
+	"github.com/brutella/hc/characteristic"
 )
 
 type Power struct {
-	*characteristic.Characteristic
+	*characteristic.Int
 }
 
-func NewPower(watt int) *Power {
-	p := Power{characteristic.NewCharacteristic(watt, characteristic.FormatInt, characteristic.CharTypeUnknown, characteristic.PermsRead())}
-	p.Unit = PowerUnit
+func NewPower(val int) *Power {
+	p := Power{characteristic.NewInt("")}
+	p.Value = val
+	p.Format = characteristic.FormatUInt64
+	p.Perms = characteristic.PermsRead()
 
 	return &p
-}
-
-func (p *Power) SetPower(watt int64) {
-	p.SetValue(watt)
-}
-
-func (p *Power) Power() int64 {
-	return p.GetValue().(int64)
 }
