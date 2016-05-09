@@ -4,9 +4,19 @@ This project is an implementation of a HomeKit bridge for the [Fronius Symo](htt
 
 # Installation
 
+## Install
+
+    cd $GOPATH/src
+
+    # Clone project
+    git clone https://github.com/brutella/hksymo && cd hksymo
+
+    # Install dependencies
+    go get
+    
 ## Build
 
-Build `hksymod.go` using `go build hksymod.go` or use the Makefile to build for Raspberry Pi
+Build `hksymod.go` using `go build daemon/hksymod.go` or use the Makefile to build for Raspberry Pi
 
     make rpi
 
