@@ -17,12 +17,10 @@ Simply execute the daemon with `./hksymod`. By default the daemon tries to conne
 If the inverter has a fixed or dynamic IP address, you should use that address
 
     ./hksymod --host=10.0.0.5
+    
+## Pair
 
-
-## HomeKit Client
-
-You need an iOS app to control HomeKit accessories. 
-You can use [Home][home] which runs on iPhone, iPad and Apple Watch.
+The accessory can be paired with any HomeKit app like [Home][home] (which runs on iPhone, iPad and Apple Watch) using the pin `001-02-003`.
 
 [home]: http://selfcoded.com/home
 [home-getting-started]: http://selfcoded.com/home/getting-started
