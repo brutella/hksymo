@@ -110,7 +110,7 @@ func main() {
 
 	var (
 		hostArg     = flag.String("host", fronius.SymoHostClassA, "Host; default 169.254.0.180")
-		refreshArg  = flag.Int("refresh", 5, "Refresh in seconds; default 10")
+		refreshArg  = flag.Int("refresh", 10, "Refresh in seconds; default 10")
 		simulateArg = flag.Bool("simulate", false, "Simulate Fronius symo; default true")
 	)
 
