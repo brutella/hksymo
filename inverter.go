@@ -44,17 +44,17 @@ func NewService(name string) *Service {
 
 	today := NewPower(0)
 	today.Type = TypeTotalPower
-	today.Unit = "W"
+	today.Unit = "Wh"
 	today.Description = "Heute"
 
 	year := NewPower(0)
 	year.Type = TypeTotalPower
-	year.Unit = "W"
+	year.Unit = "Wh"
 	year.Description = "Dieses Jahr"
 
 	total := NewPower(0)
 	total.Type = TypeTotalPower
-	total.Unit = "W"
+	total.Unit = "Wh"
 	total.Description = "Gesamt"
 
 	svc := service.New(typeInverter)
