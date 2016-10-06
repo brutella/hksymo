@@ -6,9 +6,8 @@ import (
 	"github.com/brutella/hc"
 	"github.com/brutella/hc/accessory"
 	"github.com/brutella/hksymo"
-	"github.com/brutella/log"
 
-	slog "log"
+	"log"
 	"net"
 	"net/http"
 	"net/url"
@@ -47,7 +46,7 @@ func get() (inv fronius.InverterSystemResponse, err error) {
 		resp, err := client.Get(fronius.SystemRealtimeDataRequestURL(url.Host))
 
 		if err != nil {
-			slog.Fatal(err)
+			log.Fatal(err)
 		}
 
 		inv, err = fronius.NewInverterSystemResponse(resp)
@@ -67,7 +66,7 @@ func update() {
 	inv, err := get()
 
 	if err != nil {
-		slog.Println(err)
+		log.Println(err)
 
 		if transport != nil {
 			transport.Stop()
@@ -105,9 +104,6 @@ var simulate bool
 var config hc.Config
 
 func main() {
-	log.Verbose = false
-	log.Info = true
-
 	var (
 		hostArg     = flag.String("host", fronius.SymoHostClassA, "Host; default 169.254.0.180")
 		refreshArg  = flag.Int("refresh", 10, "Refresh in seconds; default 10")
