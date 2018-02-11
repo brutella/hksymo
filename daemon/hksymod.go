@@ -131,7 +131,7 @@ func main() {
 
 	hc.OnTermination(func() {
 		if transport != nil {
-			transport.Stop()
+			<-transport.Stop()
 		}
 		timer.Stop()
 		os.Exit(1)
