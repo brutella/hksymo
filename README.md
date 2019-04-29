@@ -3,16 +3,6 @@
 This project is an implementation of a HomeKit bridge for the [Fronius Symo](http://www.fronius.com/cps/rde/xchg/fronius_international/hs.xsl/83_28694_ENG_HTML.htm) using [HomeControl](https://github.com/brutella/hc) and [fronius](https://github.com/brutella/fronius).
 
 # Installation
-
-## Install
-
-    cd $GOPATH/src
-
-    # Clone project
-    git clone https://github.com/brutella/hksymo && cd hksymo
-
-    # Install dependencies
-    go get
     
 ## Build
 
@@ -30,14 +20,9 @@ If the inverter has a fixed or dynamic IP address, you should use that address
     
 ## Pair
 
-The accessory can be paired with any HomeKit app like [Home][home] (which runs on iPhone, iPad and Apple Watch) using the pin `001-02-003`.
+The accessory can be paired with any HomeKit app (eg [Home 3][home]) using the pin `001-02-003`.
 
-[home]: http://selfcoded.com/home
-[home-getting-started]: http://selfcoded.com/home/getting-started
-
-## TODO
-
-- Show all values provided by the API
+[home]: https://hochgatterer.me/home
 
 # Contact
 
